@@ -2,15 +2,18 @@ package org.dharce.springcloud.msvccursos.clients;
 
 import org.dharce.springcloud.msvccursos.models.Usuario;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "mavc-usuarios",url = "localhost:8001/api/usuario")
+import java.util.List;
+
+@FeignClient(name="msvc-usuarios", url="localhost:8001/api/usuario")
 public interface UsuarioClientRest {
     @GetMapping("/{id}")
     Usuario detalle(@PathVariable Long id);
     @PutMapping()
     Usuario crear(@RequestBody Usuario usuario);
+
+    @GetMapping("/usuarios-por-curso")
+    List<Usuario> obtenerAlumnosPorCurso(@RequestParam Iterable<Long> ids);
+
 }

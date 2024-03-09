@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class CursoServiceImpl  implements  CursoService{
     @Autowired
@@ -45,11 +47,19 @@ public class CursoServiceImpl  implements  CursoService{
     @Transactional
     public Optional<Usuario> asignarUsuario(Usuario usuario, Long cursoId) {
         Optional<Curso> o = repository.findById(cursoId);
+
+
         if(o.isPresent()){
             Usuario usuarioMsvc = clientRest.detalle(usuario.getId());
             Curso curso = o.get();
+            //aca va la validacion
             CursoUsuario cursoUsuario = new CursoUsuario();
             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
+            for (CursoUsuario cu : curso.getCursoUsuarios()) {
+                if(cursoUsuario.getId() == cu.getId()){
+                    return Optional.empty();
+                }
+            }
             curso.addCursoUsuarios(cursoUsuario);
 
             repository.save(curso);
@@ -93,5 +103,28 @@ public class CursoServiceImpl  implements  CursoService{
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> porIdConCurso(Long id) {
+        Optional<Curso> o = repository.findById(id);
+        if(o.isPresent()){
+            Curso curso = o.get();
+            if(!curso.getCursoUsuarios().isEmpty()){
+                List<Long> ids = curso.getCursoUsuarios().stream().map(
+                        cu ->cu.getUsuarioId()).collect(Collectors.toList());
+                List<Usuario> usuarios = clientRest.obtenerAlumnosPorCurso(ids);
+                curso.setUsuarios(usuarios);
+            }
+            return Optional.of(curso);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public void eliminarCursoUsuarioPorId(Long id) {
+        repository.eliminarCursoUsuarioPorId(id);
     }
 }

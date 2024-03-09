@@ -3,12 +3,12 @@ package org.dharce.springcloud.msvccursos.models.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cursos-usuario")
+@Table(name = "cursos_usuario")
 public class CursoUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "usuario_id",unique = true)
+    @Column(name = "usuario_id") // Se elimino unique = true -> se debe crear un metodo para validar la asignacion de un usuario a un solo curso
     private Long usuarioId;
 
     public Long getId() {

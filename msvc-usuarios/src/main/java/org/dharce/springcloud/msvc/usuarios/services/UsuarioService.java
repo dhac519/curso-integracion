@@ -14,4 +14,10 @@ public interface UsuarioService {
 
     Optional<Usuario> porEmail(String email);
 
+    //Metodos remotos
+
+    List<Usuario> listaPorIds(Iterable<Long> ids);
+
+
+
 }
